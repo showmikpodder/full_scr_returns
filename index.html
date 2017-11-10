@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>
+			NYC MAP
+		</title>
+		<script src='https://api.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js'></script>
+		<link href='https://api.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css' rel='stylesheet' />
+
+		<style type="text/css">
+			body {
+  margin: 0;
+  padding: 0;
+}
+
+h2,
+h3 {
+  margin: 10px;
+  font-size: 1.2em;
+}
+
+h3 {
+  font-size: 1em;
+}
+
+p {
+  font-size: 0.85em;
+  margin: 10px;
+  text-align: left;
+}
+
+/**
+* Create a position for the map
+* on the page */
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+/**
+* Set rules for how the map overlays
+* (info box and legend) will be displayed
+* on the page. */
+.map-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+  margin-right: 20px;
+  font-family: Arial, sans-serif;
+  overflow: auto;
+  border-radius: 3px;
+}
+
+#features {
+  top: 0;
+  height: 150px;
+  margin-top: 20px;
+  width: 250px;
+}
+
+
+#legend {
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 18px;
+  height: 180px;
+  margin-bottom: 40px;
+  width: 170px;
+}
+
+.legend-key {
+  display: inline-block;
+  border-radius: 20%;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+}
+		</style>
+	</head>
+	<body>
+		<h1>My Map</h1>
+		<div id="map"></div>
+		<div class="map-overlay" id='features'><h2>Number of Households at Federal Poverty Levels</h2><div id='pd'><p>Hover over a zipcode!</p></div></div>
+		<div class="map-overlay" id="legend"></div>
+		<script>
+
+			mapboxgl.accessToken = 'pk.eyJ1Ijoic3BvZGRlciIsImEiOiJjajloZ25iMXMzODZuMndxbXNrdTM5bnd6In0.lN9vRRFe-MfxkmdYyQ2oKA';
+			var map = new mapboxgl.Map({
+				container: 'map', // container id
+				style: 'mapbox://styles/spodder/cj9nnr66q3n0v2rtcm80zwgk3' // replace this with your style URL
+			});
+			map.on('load', function() {
+				var layers = ['0-2134 returns', '2135-3120 returns', '3121-4170 returns', '4171-5840 returns', '5841-6510 returns', '6511-7670 returns', '7671-8300 returns', '8301-10690 returns', '10691-17375 returns', '17376+ returns'];
+				var colors = ['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026', '#3f0818'];
+				
+				for (i = 0; i < layers.length; i++) {
+				  var layer = layers[i];
+				  var color = colors[i];
+				  var item = document.createElement('div');
+				  var key = document.createElement('span');
+				  key.className = 'legend-key';
+				  key.style.backgroundColor = color;
+
+				  var value = document.createElement('span');
+				  value.innerHTML = layer;
+				  item.appendChild(key);
+				  item.appendChild(value);
+				  legend.appendChild(item);
+				}
+			
+			});	
+			map.on('mousemove', function(e) {
+			var zipcodes = map.queryRenderedFeatures(e.point, {
+				layers: ['queens-map-edited4']
+			});
+
+			if (zipcodes.length > 0) {
+				document.getElementById('pd').innerHTML = '<h3><strong>' + zipcodes[0].properties.postalCode + '</strong></h3><p><strong><em>' + zipcodes[0].properties.Returns + '</strong> Poverty level tax filings</em></p>';
+			  } else {
+				document.getElementById('pd').innerHTML = '<p>Hover over a zipcode!</p>';
+			  }
+			});	
+		</script>
+
+	</body>
+</html>
